@@ -1,7 +1,7 @@
 // import section
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 
@@ -21,10 +21,18 @@ const gameCollection = client.db('gameNote').collection('games')
 
 async function run() {
     try {
-        app.get('/games', async (req, res) => {
+        // get all services
+        app.get('/services', async (req, res) => {
             const size = parseInt(req.query.size);
             const games = await gameCollection.find({}).limit(size).toArray();
             res.send(games)
+        })
+        // get specific service using id
+        app.get('/services/:id', async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: ObjectId(id) }
+            const service = await gameCollection.findOne(query);
+            res.send(service);
         })
     }
     catch (error) {
