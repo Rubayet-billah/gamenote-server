@@ -42,6 +42,39 @@ async function run() {
             const result = await reviewCollection.insertOne(review);
             res.send(result)
         })
+
+        // get specific reviews using query
+        app.get('/reviews', async (req, res) => {
+            const query = { serviceName: req.query.service }
+            const reviews = await reviewCollection.find(query).toArray();
+            res.send(reviews)
+        })
+
+        // get all reviews of a user using email query
+        app.get('/myreview', async (req, res) => {
+            const query = { email: req.query.email }
+            // console.log(query);
+            const myReviews = await reviewCollection.find(query).toArray()
+            res.send(myReviews)
+        })
+
+        // delete specific review from database
+        app.delete('/myreview/:id', async (req, res) => {
+            const filter = { _id: ObjectId(req.params.id) };
+            const result = await reviewCollection.deleteOne(filter)
+            res.send(result)
+        })
+
+        // update specific review form database
+        app.patch('/myreview/:id', async (req, res) => {
+            const newDescription = req.body.description;
+            const query = { _id: ObjectId(req.params.id) }
+            const updatedDoc = {
+                $set: { description: newDescription }
+            }
+            const result = await reviewCollection.updateOne(query, updatedDoc)
+            res.send(result)
+        })
     }
     catch (error) {
 
