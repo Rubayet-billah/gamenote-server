@@ -17,7 +17,8 @@ app.use(express.json())
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.bhwsqpg.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-const gameCollection = client.db('gameNote').collection('games')
+const gameCollection = client.db('gameNote').collection('games');
+const reviewCollection = client.db('gameNote').collection('reviews')
 
 async function run() {
     try {
@@ -27,12 +28,19 @@ async function run() {
             const games = await gameCollection.find({}).limit(size).toArray();
             res.send(games)
         })
-        // get specific service using id
+        // get specific service using id  
         app.get('/services/:id', async (req, res) => {
             const { id } = req.params;
             const query = { _id: ObjectId(id) }
             const service = await gameCollection.findOne(query);
             res.send(service);
+        })
+
+        // add reviews to database using post method
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result)
         })
     }
     catch (error) {
