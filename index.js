@@ -35,7 +35,6 @@ async function run() {
             const service = await gameCollection.findOne(query);
             res.send(service);
         })
-
         // add reviews to database using post method
         app.post('/reviews', async (req, res) => {
             const review = req.body;
@@ -73,6 +72,13 @@ async function run() {
                 $set: { description: newDescription }
             }
             const result = await reviewCollection.updateOne(query, updatedDoc)
+            res.send(result)
+        })
+
+        // add service to database
+        app.post('/addservice', async (req, res) => {
+            const service = req.body;
+            const result = await gameCollection.insertOne(service);
             res.send(result)
         })
     }
