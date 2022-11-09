@@ -21,6 +21,11 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 const gameCollection = client.db('gameNote').collection('games');
 const reviewCollection = client.db('gameNote').collection('reviews')
 
+async function verifyJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+    console.log(authHeader)
+}
+
 async function run() {
     try {
         // jwt token implement
@@ -58,7 +63,7 @@ async function run() {
         })
 
         // get all reviews of a user using email query
-        app.get('/myreview', async (req, res) => {
+        app.get('/myreview', verifyJWT, async (req, res) => {
             const query = { email: req.query.email }
             // console.log(query);
             const myReviews = await reviewCollection.find(query).toArray()
