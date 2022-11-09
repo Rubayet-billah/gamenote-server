@@ -23,7 +23,17 @@ const reviewCollection = client.db('gameNote').collection('reviews')
 
 async function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
-    console.log(authHeader)
+    if (!authHeader) {
+        return res.status(401).send("Unathorized access")
+    }
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
+        if (error) {
+            return res.status(403).send("unathorized access")
+        }
+        req.decoded = decoded;
+        next()
+    })
 }
 
 async function run() {
@@ -65,6 +75,7 @@ async function run() {
         // get all reviews of a user using email query
         app.get('/myreview', verifyJWT, async (req, res) => {
             const query = { email: req.query.email }
+            console.log(req.decoded.email)
             // console.log(query);
             const myReviews = await reviewCollection.find(query).toArray()
             res.send(myReviews)
