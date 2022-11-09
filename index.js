@@ -75,10 +75,11 @@ async function run() {
         // get all reviews of a user using email query
         app.get('/myreview', verifyJWT, async (req, res) => {
             const query = { email: req.query.email }
-            console.log(req.decoded.email)
-            // console.log(query);
-            const myReviews = await reviewCollection.find(query).toArray()
-            res.send(myReviews)
+            const decodedData = req.decoded.email
+            if (req.query.email === decodedData) {
+                const myReviews = await reviewCollection.find(query).toArray()
+                res.send(myReviews)
+            }
         })
 
         // delete specific review from database
