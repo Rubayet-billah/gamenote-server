@@ -67,8 +67,13 @@ async function run() {
 
         // get specific reviews using query
         app.get('/reviews', async (req, res) => {
-            const query = { serviceName: req.query.service }
-            const reviews = await reviewCollection.find(query).toArray();
+            const query = { serviceId: req.query.service }
+
+            const options = {
+                sort: { date: -1 }
+            }
+
+            const reviews = await reviewCollection.find(query, options).toArray();
             res.send(reviews)
         })
 
